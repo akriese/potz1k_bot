@@ -27,7 +27,7 @@ class PotzAI:
             'action' is meant to be an N*N array with exactly one 1, else 0s
             to denote the placement of the rolled dices number
         """
-        old_score = self.get_score()
+        old_score = self.get_score(self.matrix)
         # print(action)
         if isinstance(action, tuple): # for human input
             self.matrix[action[0], action[1]] = self.last_dice
@@ -39,7 +39,7 @@ class PotzAI:
                 return -1000, True, -1000
             self.matrix += action * self.last_dice
 
-        new_score = self.get_score()
+        new_score = self.get_score(self.matrix)
         reward = new_score - old_score
 
         if self.rolls_left == 0:
@@ -55,14 +55,14 @@ class PotzAI:
         self.rolls_left -= 1
         return self.last_dice
 
-    def get_score(self):
-        current_sum = (self.matrix * self.multipliers).sum()
+    def get_score(self, matrix):
+        current_sum = (matrix * self.multipliers).sum()
         score = self.goal - np.abs(self.goal - current_sum)
         # diagonal bonus
-        if np.equal.reduce(self.matrix.diagonal()):
-            score += self.matrix[0, 0] * 10
-        if np.equal.reduce(np.fliplr(self.matrix).diagonal()):
-            score += self.matrix[self.n-1, 0] * 10
+        if np.equal.reduce(matrix.diagonal()):
+            score += matrix[0, 0] * 10
+        if np.equal.reduce(np.fliplr(matrix).diagonal()):
+            score += matrix[self.n-1, 0] * 10
 
         return score
 
