@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 
 import numpy as np
 import random
+import seaborn as sns
 import torch
 
 from game import PotzAI
@@ -59,7 +60,6 @@ class Agent:
             if final_move.sum() != 1:
                 print(f"{move=}, {state=}, {prediction=}")
 
-
         return final_move.reshape((self.n, self.n))
 
 
@@ -68,8 +68,10 @@ def train():
     plot_mean_scores = []
     total_score = 0
     record = 0
-    agent = Agent()
-    game = PotzAI()
+    N = 3
+    agent = Agent(n=N)
+    game = PotzAI(n=N)
+    first_choices = np.zeros((N*N, N, N))
 
     game.start_game()
     while True:
@@ -78,6 +80,7 @@ def train():
 
         # get move
         final_move = agent.get_action(state_old)
+        first_choices[N*N - game.rolls_left - 1] += final_move
 
         reward, done, score = game.play_step(final_move)
         state_new = agent.get_state(game)
@@ -104,6 +107,15 @@ def train():
             print(f"Game {agent.n_games}, Score: {score}, Record: {record}, {mean_score=:.1f}\n")
             # if agent.n_games % 100 == 99:
             plot(plot_scores, plot_mean_scores)
+            if agent.n_games % 500 == 0:
+                _, axs = plt.subplots(nrows=N, ncols=N)
+                for i, ax_row in enumerate(axs):
+                    for j, ax in enumerate(ax_row):
+                        move = i*N+j
+                        ax.set_title(f"Move {move+1}")
+                        sns.heatmap(data=first_choices[move], ax=ax)
+
+                plt.show()
 
 def plot(scores, mean_scores):
     display.clear_output(wait=True)
