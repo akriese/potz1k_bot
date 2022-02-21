@@ -61,9 +61,9 @@ class PotzAI:
         current_sum = self.get_sum(matrix)
         score = self.goal - np.abs(self.goal - current_sum)
         # diagonal bonus
-        if np.equal.reduce(matrix.diagonal()):
+        if np.all(matrix.diagonal() == matrix[0, 0]):
             score += matrix[0, 0] * 10
-        if np.equal.reduce(np.fliplr(matrix).diagonal()):
+        if np.all(np.fliplr(matrix).diagonal() == matrix[self.n-1, 0]):
             score += matrix[self.n-1, 0] * 10
 
         return score
