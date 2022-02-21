@@ -103,10 +103,10 @@ def train():
             plot_scores.append(score)
             total_score += score
             mean_score = total_score / agent.n_games
+            last_50_scores = np.mean(plot_scores[-50:])
             plot_mean_scores.append(mean_score)
-            print(f"Game {agent.n_games}, Score: {score}, Record: {record}, {mean_score=:.1f}\n")
-            # if agent.n_games % 100 == 99:
-            plot(plot_scores, plot_mean_scores)
+            print(f"Game {agent.n_games}, Score: {score}, ",
+                f"Record: {record}, Last50: {last_50_scores:.1f}")
             if agent.n_games % 500 == 0:
                 _, axs = plt.subplots(nrows=N, ncols=N)
                 for i, ax_row in enumerate(axs):
@@ -116,6 +116,9 @@ def train():
                         sns.heatmap(data=first_choices[move], ax=ax)
 
                 plt.show()
+            # plot(plot_scores, plot_mean_scores)
+
+            # print("training LT memory")
             agent.train_long_memeory()
 
 
