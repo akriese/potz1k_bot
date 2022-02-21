@@ -11,7 +11,7 @@ from game import PotzAI
 from model import QTrainer, LinearQNet
 
 MAX_MEMORY = 100_000
-BATCH_SIZE = 1000
+BATCH_SIZE = 128
 LR = 0.001
 
 class Agent:
