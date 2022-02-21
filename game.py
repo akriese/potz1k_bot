@@ -13,6 +13,7 @@ class PotzAI:
         self.rolls_left = self.n * self.n
         self.last_dice = 0
         self.score = 0
+        self.optimal_score = self.goal
 
     def start_game(self):
         self.reset()
@@ -40,7 +41,12 @@ class PotzAI:
             self.matrix += action * self.last_dice
 
         new_score = self.get_score(self.matrix)
-        reward = new_score - old_score
+
+        # reward = new_score - old_score
+        old_opt_score = self.optimal_score
+        self.optimal_score = self.best_possible_score()
+        reward = (new_score - old_score) / (old_opt_score - self.optimal_score + 1)
+
 
         if self.rolls_left == 0:
             # print(self.matrix)
