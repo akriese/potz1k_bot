@@ -94,7 +94,6 @@ def train():
             # print(game.get_state(), game.get_score())
             game.start_game()
             agent.n_games += 1
-            agent.train_long_memeory()
 
             if score > record:
                 record = score
@@ -117,6 +116,8 @@ def train():
                         sns.heatmap(data=first_choices[move], ax=ax)
 
                 plt.show()
+            agent.train_long_memeory()
+
 
 def plot(scores, mean_scores):
     display.clear_output(wait=True)
