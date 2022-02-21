@@ -35,6 +35,13 @@ class LinearQNet(nn.Module):
 
         torch.save(self.state_dict(), file_name)
 
+    def load(self, file_name='model.pth'):
+        path = Path('model', file_name)
+        if not path.exists():
+            print(f'Given file {path} does not exist!')
+            return
+        torch.load(path)
+
 class QTrainer:
     def __init__(self, model, lr, gamma) -> None:
         self.model = model

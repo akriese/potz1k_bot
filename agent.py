@@ -1,10 +1,10 @@
 from collections import deque
 from IPython import display
 import matplotlib.pyplot as plt
-
 import numpy as np
 import random
 import seaborn as sns
+import sys
 import torch
 
 from game import PotzAI
@@ -121,6 +121,28 @@ def train():
             # print("training LT memory")
             agent.train_long_memeory()
 
+def play_example(agent: Agent, game: PotzAI):
+    game.start_game()
+    n = game.n
+    while True:
+        state_old = agent.get_state(game)
+        final_move = agent.get_action(state_old)
+        _, done, _ = game.play_step(final_move)
+        status_new = agent.get_state(game)
+
+        print(f"{status_new[:-1].reshape((n, n))}")
+
+
+        if done:
+            print(f"Bot scored {game.get_score()}")
+            choice = input("Do you want the bot to play another game?")
+            if choice in ['y', 'Y', '']:
+                print(f"####### Starting new game... ########")
+                game.start_game()
+            else:
+                break
+        else:
+            print(f"Next dice: {status_new[-1]}")
 
 def plot(scores, mean_scores):
     display.clear_output(wait=True)
@@ -137,4 +159,14 @@ def plot(scores, mean_scores):
     # plt.show()
 
 if __name__ == "__main__":
-    train()
+    if sys.argv[1] == 'train':
+        train()
+    else:
+        if len(sys.argv) >= 3:
+            fname = sys.argv[2]
+        agent = Agent(n=3)
+        agent.model.load()
+        game = PotzAI(n=3)
+        play_example(agent, game)
+
+
