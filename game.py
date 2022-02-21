@@ -73,3 +73,56 @@ class PotzAI:
             matrix = self.matrix
         return (matrix * self.multipliers).sum()
 
+    def best_possible_score(self, matrix=None):
+        # determine best score without thinking about bonuses
+        if matrix is None:
+            matrix = self.matrix
+        n = matrix.shape[0]
+        def rec_search(spots, diff):
+            best_dist = []
+            for i, s in enumerate(spots):
+                if s == 0:
+                    continue
+                new_spots = spots.copy()
+                new_spots[i] -= 1
+                for d in range(1, 7):
+                    new_diff = diff - d*10**(n-i-1)
+                    if new_diff < 0:
+                        best_dist.append(abs(new_diff - set_all_ones(new_spots)))
+                        break
+
+                    # print(diff, d, i, new_diff, new_spots)
+                    best_dist.append(rec_search(new_spots, new_diff))
+                break
+            if not best_dist:
+                return diff
+            return min(best_dist)
+
+        def set_all_ones(spots):
+            return np.sum(self.multipliers * spots)
+
+        current_sum = self.get_sum(matrix)
+        mask = matrix == 0
+        if current_sum == 0 or np.sum(mask) == n*n-1:
+            return self.goal
+        if np.sum(mask) == n*n:
+            return abs(self.goal-current_sum)
+
+        available_spots = np.zeros(n)
+        for i in range(n):
+            available_spots[i] = mask[:, i].sum()
+
+        if current_sum > self.goal:
+            # minimize additional points towards goal
+            # put lowest number into all available spots
+            best_score = current_sum + np.sum(available_spots * self.multipliers)
+        else:
+            # maximize additional points towards goal
+            # here, we need some greedy algorithm
+            diff = self.goal - current_sum
+            best_diff = rec_search(available_spots, diff)
+            # print(self.goal, diff, best_diff)
+            best_score = self.goal - best_diff
+
+        return best_score
+
