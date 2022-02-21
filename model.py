@@ -8,16 +8,24 @@ import torch.nn.functional as F
 class LinearQNet(nn.Module):
     def __init__(self, input_size, hidden_size, output_size) -> None:
         super().__init__()
-        self.input_size = input_size*7
-        self.linear1 = nn.Linear(self.input_size, hidden_size)
+        self.input_size = input_size
+        self.linear1 = nn.Linear(self.input_size*7, hidden_size)
         self.linear2 = nn.Linear(hidden_size, output_size)
 
     def forward(self, x):
-        reshaped = F.one_hot(x.long(), num_classes=7).reshape((-1, self.input_size))
+        start_x = x.long().reshape((-1, self.input_size))
+        mask = start_x[:, :-1] == 0
+        reshaped = F.one_hot(start_x, num_classes=7).reshape((-1, self.input_size*7))
         # print(f"{len(x)=}")
         # print(flattened)
         x = F.relu(self.linear1(reshaped.float()))
         x = self.linear2(x)
+
+        # print(mask.shape, x.shape)
+        x = (x + torch.min(x).abs()) * mask + 0.5 * mask
+        x /= torch.max(x+0.0001)
+        x += 0.0001
+        # print(f"{start_x},\n {x}")
         return x
 
     def save(self, file_name='model.pth'):
