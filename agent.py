@@ -54,8 +54,9 @@ class Agent:
             state0 = torch.tensor(state, dtype=torch.long)
             prediction = self.model(state0)
             # print(f"{prediction.shape=}")
-            arg_max = torch.argmax(prediction[0][possible_moves]).item()
-            move = possible_moves[arg_max]
+            # arg_max = torch.argmax(prediction[0][possible_moves]).item()
+            # move = possible_moves[arg_max]
+            move = torch.argmax(prediction[0]).item()
             final_move[move] = 1
             if final_move.sum() != 1:
                 print(f"{move=}, {state=}, {prediction=}")

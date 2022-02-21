@@ -49,10 +49,10 @@ class QTrainer:
         action = torch.tensor(np.array(action), dtype=torch.long)
         reward = torch.tensor(np.array(reward), dtype=torch.long)
 
-        single_mode = False
+        # single_mode = False
         if len(state.shape) == 1:
             # reshape
-            single_mode = True
+            # single_mode = True
             state = torch.unsqueeze(state, 0)
             next_state = torch.unsqueeze(next_state, 0)
             action = torch.unsqueeze(action, 0)
