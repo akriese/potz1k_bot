@@ -55,8 +55,10 @@ class PotzAI:
         self.rolls_left -= 1
         return self.last_dice
 
-    def get_score(self, matrix):
-        current_sum = (matrix * self.multipliers).sum()
+    def get_score(self, matrix=None):
+        if matrix is None:
+            matrix = self.matrix
+        current_sum = self.get_sum(matrix)
         score = self.goal - np.abs(self.goal - current_sum)
         # diagonal bonus
         if np.equal.reduce(matrix.diagonal()):
@@ -66,6 +68,8 @@ class PotzAI:
 
         return score
 
-
-
+    def get_sum(self, matrix=None):
+        if matrix is None:
+            matrix = self.matrix
+        return (matrix * self.multipliers).sum()
 
